@@ -4,8 +4,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"github.com/dgrijalva/jwt-go"
 	"log"
-	"os"
 )
 
 const flowUsernamePassword = "USER_PASSWORD_AUTH"
@@ -67,4 +67,8 @@ func (cj *JWTClient) Login(username, password string) (Token, error) {
 		RefreshToken: *res.AuthenticationResult.RefreshToken,
 		ExpiresIn:    *res.AuthenticationResult.ExpiresIn,
 	}, nil
+}
+
+func (cc *JWTClient) ValidateJWT(jwt string) (*jwt.Token, error) {
+	return cc.validate(jwt)
 }
