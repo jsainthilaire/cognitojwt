@@ -1,4 +1,4 @@
-module github.com/jsainthilaire/cognito-jwt
+module github.com/jsainthilaire/cognitojwt
 
 go 1.14
 

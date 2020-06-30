@@ -1,4 +1,4 @@
-package cognito_jwt
+package cognitojwt
 
 import (
 	"crypto/rsa"
