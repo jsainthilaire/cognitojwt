@@ -1,7 +1,7 @@
 # AWS cognito with JWT
 
-#TODO
-
-- Add sign up method
+# TODO
+- Add tests
 - Add refresh token method
-- add flexibility around token scope
+- Add get attributes method
+- Add flexibility around token scope

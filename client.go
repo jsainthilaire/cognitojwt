@@ -45,6 +45,11 @@ type User struct {
 	Password string
 }
 
+type Attribute struct {
+	Name string
+	Value string
+}
+
 func (cj *JWTClient) Login(username, password string) (Token, error) {
 	params := map[string]*string{
 		"USERNAME": aws.String(username),
@@ -66,6 +71,38 @@ func (cj *JWTClient) Login(username, password string) (Token, error) {
 		AccessToken:  *res.AuthenticationResult.AccessToken,
 		RefreshToken: *res.AuthenticationResult.RefreshToken,
 		ExpiresIn:    *res.AuthenticationResult.ExpiresIn,
+	}, nil
+}
+
+type RegisterOutput struct {
+	ID string
+	UserConfirmed bool
+}
+
+func (cj *JWTClient) Register(username, password string, attributes ...Attribute) (RegisterOutput, error) {
+	var userAttr []*cognito.AttributeType
+	for _, attr := range attributes {
+		userAttr = append(userAttr, &cognito.AttributeType{
+			Name:  aws.String(attr.Name),
+			Value: aws.String(attr.Value),
+		})
+	}
+
+	user := &cognito.SignUpInput{
+		Username: aws.String(username),
+		Password: aws.String(password),
+		ClientId: aws.String(cj.AppClientID),
+		UserAttributes: userAttr,
+	}
+
+	output, err := cj.CognitoClient.SignUp(user)
+	if err != nil {
+		return RegisterOutput{}, err
+	}
+
+	return RegisterOutput{
+		ID: *output.UserSub,
+		UserConfirmed: *output.UserConfirmed,
 	}, nil
 }
 
