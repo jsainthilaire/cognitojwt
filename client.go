@@ -106,6 +106,27 @@ func (cj *JWTClient) Register(username, password string, attributes ...Attribute
 	}, nil
 }
 
-func (cc *JWTClient) ValidateJWT(jwt string) (*jwt.Token, error) {
-	return cc.validate(jwt)
+func (cj *JWTClient) ValidateJWT(jwt string) (*jwt.Token, error) {
+	return cj.validate(jwt)
+}
+
+func (cj *JWTClient) GetUserAttributes(username string) ([]Attribute, error) {
+	output, err := cj.CognitoClient.AdminGetUser(&cognito.AdminGetUserInput{
+		UserPoolId: aws.String(cj.UserPoolID),
+		Username:   aws.String(username),
+	})
+
+	if err != nil {
+		return []Attribute{}, err
+	}
+
+	var userAttributes []Attribute
+	for _, attr := range output.UserAttributes {
+		userAttributes = append(userAttributes, Attribute{
+			Name:  aws.StringValue(attr.Name),
+			Value: aws.StringValue(attr.Value),
+		})
+	}
+
+	return userAttributes, nil
 }
